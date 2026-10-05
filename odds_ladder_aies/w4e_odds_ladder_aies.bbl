@@ -1,0 +1,122 @@
+\begin{thebibliography}{21}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\renewcommand{\UrlFont}{\rmfamily}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{https://doi.org/\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{https://doi.org/\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+\providecommand{\eprint}[2][]{\url{#2}}
+
+\bibitem[{Barnston et~al.(1997)Barnston, Chelliah,, and
+  Goldenberg}]{barnston1997nino34}
+Barnston, A.~G., M.~Chelliah, and S.~B. Goldenberg, 1997: Documentation of a
+  highly {ENSO}-related {SST} region in the equatorial {P}acific. \textit{Bull.
+  Amer. Meteor. Soc.}, \textbf{78}, 1107--1109.
+
+\bibitem[{Barnston et~al.(2012)Barnston, Tippett, L'Heureux, Li,, and
+  DeWitt}]{barnston2012cfsv2}
+Barnston, A.~G., M.~K. Tippett, M.~L. L'Heureux, S.~Li, and D.~G. DeWitt, 2012:
+  Skill of real-time seasonal {ENSO} model predictions during 2002--11: Is our
+  capability increasing? \textit{Bull. Amer. Meteor. Soc.}, \textbf{93},
+  631--651, \doi{10.1175/BAMS-D-11-00111.1}.
+
+\bibitem[{Bi et~al.(2023)}]{bi2023pangu}
+Bi, K., and Coauthors, 2023: Accurate medium-range global weather forecasting
+  with {3D} neural networks. \textit{Nature}, \textbf{619}, 533--538,
+  \doi{10.1038/s41586-023-06185-3}.
+
+\bibitem[{Brier(1950)}]{brier1950}
+Brier, G.~W., 1950: Verification of forecasts expressed in terms of
+  probability. \textit{Mon. Wea. Rev.}, \textbf{78}, 1--3,
+  \doi{10.1175/1520-0493(1950)078<0001:VOFEIT>2.0.CO;2}.
+
+\bibitem[{Golaz et~al.(2022)}]{golaz2022e3sm}
+Golaz, J.-C., and Coauthors, 2022: The {DOE E3SM} model version 2: Overview of
+  the physical model and initial model evaluation. \textit{J. Adv. Model. Earth
+  Syst.}, \textbf{14}, e2022MS003\,156, \doi{10.1029/2022MS003156}.
+
+\bibitem[{Heidke(1926)}]{heidke1926}
+Heidke, P., 1926: Berechnung des {E}rfolges und der {G}{\"u}te der
+  {W}indst{\"a}rkevorhersagen im {S}turmwarnungsdienst. \textit{Geogr. Ann.},
+  \textbf{8}, 301--349.
+
+\bibitem[{Hersbach et~al.(2020)}]{hersbach2020era5}
+Hersbach, H., and Coauthors, 2020: The {ERA5} global reanalysis. \textit{Quart.
+  J. Roy. Meteor. Soc.}, \textbf{146}, 1999--2049, \doi{10.1002/qj.3803}.
+
+\bibitem[{Hong et~al.(2025)}]{hong2025enso}
+Hong, X., and Coauthors, 2025: {ENSO}-driven variability and future changes in
+  {U.S.} hydroclimate. \textit{npj Climate Atmos. Sci.},
+  \doi{10.1038/s41612-025-00972-7}.
+
+\bibitem[{Hurrell(1995)}]{hurrell1995nao}
+Hurrell, J.~W., 1995: Decadal trends in the {N}orth {A}tlantic {O}scillation:
+  Regional temperatures and precipitation. \textit{Science}, \textbf{269},
+  676--679, \doi{10.1126/science.269.5224.676}.
+
+\bibitem[{Johnson et~al.(2019)}]{johnson2019seas5}
+Johnson, S.~J., and Coauthors, 2019: {SEAS5}: The new {ECMWF} seasonal forecast
+  system. \textit{Geosci. Model Dev.}, \textbf{12}, 1087--1117,
+  \doi{10.5194/gmd-12-1087-2019}.
+
+\bibitem[{Kirtman et~al.(2014)}]{kirtman2014nmme}
+Kirtman, B.~P., and Coauthors, 2014: The {N}orth {A}merican {M}ultimodel
+  {E}nsemble: Phase-1 seasonal-to-interannual prediction; {P}hase-2 toward
+  developing intraseasonal prediction. \textit{Bull. Amer. Meteor. Soc.},
+  \textbf{95}, 585--601, \doi{10.1175/BAMS-D-12-00050.1}.
+
+\bibitem[{Lam et~al.(2023)}]{lam2023graphcast}
+Lam, R., and Coauthors, 2023: Learning skillful medium-range global weather
+  forecasting. \textit{Science}, \textbf{382}, 1416--1421,
+  \doi{10.1126/science.adi2336}.
+
+\bibitem[{Nguyen et~al.(2023)Nguyen, Brandstetter, Kapoor, Gupta,, and
+  Grover}]{nguyen2023climax}
+Nguyen, T., J.~Brandstetter, A.~Kapoor, J.~K. Gupta, and A.~Grover, 2023:
+  {C}lima{X}: A foundation model for weather and climate. \textit{Proc. 40th
+  Int. Conf. on Machine Learning}, 25\,904--25\,938.
+
+\bibitem[{{NOAA Climate Prediction Center}(2026)}]{cpc-oni}
+{NOAA Climate Prediction Center}, 2026: Oceanic {N}i{\~n}o {I}ndex ({ONI}).
+  NOAA, accessed August 2026,
+  \url{https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt}.
+
+\bibitem[{Ropelewski and Halpert(1986)Ropelewski, and
+  Halpert}]{ropelewski1986enso}
+Ropelewski, C.~F., and M.~S. Halpert, 1986: North {A}merican precipitation and
+  temperature patterns associated with the {E}l {N}i{\~n}o/{S}outhern
+  {O}scillation ({ENSO}). \textit{Mon. Wea. Rev.}, \textbf{114}, 2352--2362,
+  \doi{10.1175/1520-0493(1986)114<2352:NAPATP>2.0.CO;2}.
+
+\bibitem[{Saha et~al.(2014)}]{saha2014cfsv2}
+Saha, S., and Coauthors, 2014: The {NCEP} climate forecast system version 2.
+  \textit{J. Climate}, \textbf{27}, 2185--2208,
+  \doi{10.1175/JCLI-D-12-00823.1}.
+
+\bibitem[{Thompson and Wallace(1998)Thompson, and Wallace}]{thompson1998ao}
+Thompson, D. W.~J., and J.~M. Wallace, 1998: The {A}rctic {O}scillation
+  signature in the wintertime geopotential height and temperature fields.
+  \textit{Geophys. Res. Lett.}, \textbf{25}, 1297--1300,
+  \doi{10.1029/98GL00950}.
+
+\bibitem[{Vaswani et~al.(2017)}]{vaswani2017attention}
+Vaswani, A., and Coauthors, 2017: Attention is all you need. \textit{Advances
+  in Neural Information Processing Systems}.
+
+\bibitem[{Vitart et~al.(2017)}]{vitart2017s2s}
+Vitart, F., and Coauthors, 2017: The subseasonal to seasonal ({S2S}) prediction
+  project database. \textit{Bull. Amer. Meteor. Soc.}, \textbf{98}, 163--173,
+  \doi{10.1175/BAMS-D-16-0017.1}.
+
+\bibitem[{Wang et~al.(2024)}]{wang2024orbit}
+Wang, X., and Coauthors, 2024: {ORBIT}: {O}ak {R}idge base foundation model for
+  {E}arth system predictability. \textit{Proc. Int. Conf. for High Performance
+  Computing, Networking, Storage and Analysis}.
+
+\bibitem[{Wilks(2011)}]{wilks2011}
+Wilks, D.~S., 2011: \textit{Statistical Methods in the Atmospheric Sciences}.
+  3rd ed., Academic Press.
+
+\end{thebibliography}

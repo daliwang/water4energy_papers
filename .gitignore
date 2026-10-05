@@ -1,0 +1,12 @@
+# LaTeX build logs and intermediate files
+*.aux
+*.log
+*.out
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+missfont.log
