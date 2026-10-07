@@ -1,4 +1,4 @@
-\begin{thebibliography}{21}
+\begin{thebibliography}{23}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \renewcommand{\UrlFont}{\rmfamily}
@@ -115,8 +115,20 @@ Wang, X., and Coauthors, 2024: {ORBIT}: {O}ak {R}idge base foundation model for
   {E}arth system predictability. \textit{Proc. Int. Conf. for High Performance
   Computing, Networking, Storage and Analysis}.
 
+\bibitem[{Wang et~al.(2025)}]{wang2025orbit2}
+Wang, X., and Coauthors, 2025: {ORBIT-2}: Scaling exascale vision foundation
+  models for weather and climate downscaling. \textit{Proc. Int. Conf. for High
+  Performance Computing, Networking, Storage and Analysis},
+  \doi{10.1145/3712285.3771989}.
+
 \bibitem[{Wilks(2011)}]{wilks2011}
 Wilks, D.~S., 2011: \textit{Statistical Methods in the Atmospheric Sciences}.
   3rd ed., Academic Press.
+
+\bibitem[{Yeager et~al.(2022)}]{yeager2022smyle}
+Yeager, S.~G., and Coauthors, 2022: The {S}easonal-to-{M}ultiyear {L}arge
+  {E}nsemble ({SMYLE}) prediction system using the {C}ommunity {E}arth {S}ystem
+  {M}odel version 2. \textit{Geosci. Model Dev.}, \textbf{15}, 6451--6493,
+  \doi{10.5194/gmd-15-6451-2022}.
 
 \end{thebibliography}

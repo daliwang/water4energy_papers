@@ -1,0 +1,10 @@
+Hi Dali,
+
+Overall, I think this is a great paper for an evaluation framework.
+
+One concern I have is the statistical treatment. The paper mentions that it does not perform bootstrap or permutation testing. I understand the rationale—we want to keep the evaluation as a simple operational gate. However, since this is an evaluation framework, I wonder if we should include some characterization of uncertainty and statistical significance.
+
+For example, the paper reports a BSS of +0.009 for winter temperature and +0.091 for winter precipitation, and they are treated differently in the evaluation ladder. However, it is not clear whether these differences are statistically significant given the relatively small number of test seasons.
+
+If we can establish a reasonable criterion for statistical significance, that could make the evaluation framework stronger. We could also report uncertainty estimates (e.g., confidence intervals) alongside the BSS, while keeping the existing pass/fail criterion as the simple operational gate.
+

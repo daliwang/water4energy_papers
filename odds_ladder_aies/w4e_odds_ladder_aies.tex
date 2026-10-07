@@ -1,78 +1,87 @@
-%% AIES submission draft, 5 October 2026.
+%% AIES submission draft, 6 October 2026.
 %% Peer-review format. Do not submit the two-column option.
-%% Converted from Experiments/papers/odds_ladder/w4e_odds_ladder.tex.
+%% Milestone rule (Section sec:milestone) revised the same day after review.
+%% Content synced from w4e_odds_ladder.tex (IEEE layout). AMS class and citation style kept.
 
 \documentclass{ametsocV6.2}
 
-\title{An Evaluation Ladder for Weeks-to-Years Event Probabilities}
+\title{An Evaluation Ladder for Regional Weeks-to-Years Probabilities of Temperature, Precipitation, and Runoff}
 
 \authors{Dali Wang\correspondingauthor{Dali Wang, wangd@ornl.gov}\aff{a},
 Daniel M. Ricciuto\aff{a},
 Xiaoying Shi\aff{a},
+Xiao Wang\aff{a},
 and Deeksha Rastogi\aff{a}}
 
 \affiliation{\aff{a}{Oak Ridge National Laboratory, Oak Ridge, Tennessee}}
 
-\abstract{Forecast skill at leads of weeks to seasons is difficult to see in a field error.
-The optimum of that error is the reference itself, so a large Earth-system model can train successfully and still leave event probabilities at their historical rate.
-This paper gives a quantitative ladder for that problem.
-Each rung changes one design axis: the target (an amount or a category), the season, the lead, the variable, or the object (a regional mean or a map).
-Category edges and the historical class rate are fit on training time only.
-A claim is kept only when the Brier skill score is positive on every held-out split.
-Applied to ERA5 over the Tennessee Valley, the ladder retains winter precipitation odds out to two seasons, and one-week air-temperature and surface-runoff odds when the forecast sees the issue week's atmosphere.
-Those runoff odds stay above the historical rate at two weeks and do not at three weeks.
-Week-ahead rain, two- and three-week temperature, and water odds at two and three months remain at the historical rate.
-The same events, edge rule, and score are the protocol for judging a coupled-model ensemble, and for judging any later artificial-intelligence model in the reanalysis world.}
+\abstract{Reservoir operations, hydropower, and cooling water depend on regional temperature, precipitation, and runoff at leads of weeks to years.
+The atmospheric initial condition is largely lost at these leads, and the useful quantity is a shift in the probability of a hot, cold, wet, or dry period.
+Earth system foundation models are commonly accepted on the root mean square error of the forecast field.
+A squared error is minimized by the mean field, so a model can train successfully and still leave event probabilities at their historical rate.
+This paper specifies an evaluation ladder for those probabilities before training.
+Each rung changes one design axis: the target, the season, the lead, the variable, or the forecast object.
+Training years alone fix the category boundaries and the historical class frequencies.
+A claim is kept only when the Brier skill score is positive on every held-out sample.
+The same events are scored over the Tennessee Valley in ERA5 and in E3SM seasonal-to-decadal hindcasts initialized on 1~May and 1~November.
+In ERA5, winter precipitation probabilities remain skillful to a lead of two seasons, and one-week air temperature and surface runoff probabilities are skillful when the issue-week atmosphere is included.
+In the hindcasts, one-week temperature skill recurs for November initializations; week-ahead runoff and winter precipitation do not.
+The claim tables are the milestone control for a later model, on the leads this sample defends.
+A row marked yes is an advance only when that model beats the logistic with the same issue-time information, on the same edges and the same held-out splits, in the dataset where it was trained.
+A row marked thin or no uses the historical class rate as its floor.
+Beating that rate is a separate result from beating the logistic.
+The scores are point estimates.
+A pass in one dataset is not a pass in the other, and no row covers a lead of a year.}
 
 \begin{document}
 
 \maketitle
 
 \sigstatement
-A field error at leads of weeks to seasons is smallest when the forecast redraws the historical pattern.
-That score can look successful while the chance of a wet, dry, hot, or cool event stays at the rate it already has.
-This paper defines a ladder that changes one design choice at a time and keeps a claim only when event probabilities beat a historical rate frozen on training years, on every held-out sample.
-For the Tennessee Valley in ERA5, winter precipitation and a few short-lead temperature and runoff probabilities clear that bar.
-Week-ahead rain and month-ahead water odds do not.
-The same bar is the test for a later artificial-intelligence model and for an Earth-system model ensemble.
+This paper proposes evaluation criteria for weeks-to-years prediction of water and heat for energy systems.
+At those leads, reservoir, hydropower, and cooling-water decisions depend on whether a region will be unusually hot, cold, wet, or dry, and deterministic scores of the forecast field can favor the historical pattern without shifting those probabilities.
+The criteria form an evaluation ladder: one element of the forecast design changes at a time, and a result is retained only when the Brier skill score is positive on every held-out sample against a historical rate fixed on training years.
+Applied to ERA5 and to the E3SM seasonal-to-decadal hindcast campaign over the Tennessee Valley, the ladder is the milestone control for a later foundation model: an advance only on a row marked yes, against the logistic with the same issue-time information, and only in the dataset where that model is trained.
 
 \section{Introduction}
 \label{sec:intro}
 
-Leads of weeks to a few seasons sit between medium-range weather and a climate projection.
-The atmospheric initial condition has mostly been lost, and a climate mean is not yet the decision~\citep{vitart2017s2s,saha2014cfsv2}.
-Water availability and water temperature at that range control hydropower and thermal generation.
-Physics-based systems and operational seasonal products, which are largely anomalies against a historical pattern, have limited regional skill on these decisions~\citep{saha2014cfsv2,johnson2019seas5}.
-Earth-system foundation models now offer another route: transformers and diffusion ensembles trained on reanalysis or on a coupled model, often with a field loss~\citep{lam2023graphcast,bi2023pangu,nguyen2023climax,wang2024orbit}.
-That loss has a known optimum.
-Predicting the reference field scores well and leaves the probability of a wet, dry, hot, or cool event at the rate the event already has.
+Weeks-to-years prediction of water and heat is the lead at which an energy system plans.
+In the Tennessee Valley, reservoir operations, hydropower scheduling, and the cooling water available to thermal generation depend on rainfall, streamflow, and river temperature over the coming season and the coming year.
+Fuel procurement and maintenance are set on that same horizon.
+The decisions sit past the reach of medium-range weather guidance and short of a climate projection~\citep{vitart2017s2s,saha2014cfsv2}.
+The products that do cover this range, including operational seasonal forecasts out to about a year, are issued largely as anomalies from a historical weather pattern~\citep{saha2014cfsv2,johnson2019seas5}.
+When hot, dry, and high-flow seasons depart from that pattern, the quantity an operator can use is a change in the probability of the event, relative to the rate the event already has.
+Near-surface temperature, precipitation, and runoff are the variables through which this paper poses that question for the valley.
 
-Where a predictable signal exists at these leads, it is a slow shift of that event probability away from its historical rate.
-ENSO and related teleconnections are one known source of such a shift for North American precipitation~\citep{ropelewski1986enso,hong2025enso}.
-A loss on amounts averages the shift away, so a network can collapse to the mean and be read as having no skill.
-Extra capacity can fit weather noise and miss a shift that a small probability model still sees.
-A map can be sharp and still lose to the historical field once the lead is a week.
-The evaluation therefore has to be fixed before a foundation model is trained.
-It has to name the event, the lead, the years that define the baseline, and the score that will count.
-It has to withhold credit from a model that only redraws the reference.
-The ladder in this paper is that filter.
+The prediction is hard because the information that makes a short forecast skillful does not survive to these leads, and the climate mean is not yet a seasonal decision.
+The atmospheric initial condition is largely lost within weeks~\citep{vitart2017s2s}.
+What remains is memory in the coupled system, including the El Ni\~no--Southern Oscillation and its effect on North American precipitation, and that memory appears as a shift in the probability of a regional class~\citep{ropelewski1986enso,hong2025enso}.
+Physics-based systems built for the interval therefore use initialized hindcasts of about one to two years and score seasonal anomalies after a lead-dependent model climatology is removed.
+The Climate Forecast System, SEAS5, and the CESM Seasonal-to-Multiyear Large Ensemble follow this design.
+The last of these starts two-year hindcasts four times a year because seasonal protocols stop too soon, and decadal protocols start too seldom, to sample the interval~\citep{saha2014cfsv2,johnson2019seas5,yeager2022smyle}.
+Regional skill in those systems remains limited, and the guidance that reaches an operator stays close to the historical pattern.
 
-The protocol changes one design axis at a time.
-Category edges and the historical class rate are frozen from training time.
-The score is the Brier skill score~\citep{brier1950,wilks2011}.
-A pass is required on every pre-declared held-out split, separately for each variable and each lead.
-The protocol does not depend on which world produced the sample.
-The same event can be built from a reanalysis or from an Earth-system model ensemble.
-Agreement across those worlds is evidence about the source of the skill.
-Divergence is also a result.
-The reanalysis score is not copied onto the model world.
+Foundation models are now trained on reanalysis and on coupled-model output to learn a predictive operator for Earth-system fields.
+GraphCast, Pangu-Weather, and ClimaX are accepted on the root-mean-square error and the anomaly correlation of atmospheric maps at leads of hours to about ten days~\citep{lam2023graphcast,bi2023pangu,nguyen2023climax}.
+ORBIT and ORBIT-2 carry that class of model toward Earth-system predictability and toward weather and climate downscaling~\citep{wang2024orbit,wang2025orbit2}.
+Those scores ask whether the predicted map is close to the analysis.
+A squared error is minimized by the mean field, so a model can train successfully by reproducing the historical pattern and still leave the probability of an unusual heat or water event at its historical rate.
+A loss on the continuous amount averages that shift away, and additional capacity can fit weather noise while missing a shift that a small probability model still detects.
+Seasonal and subseasonal systems already score categorical events with the Brier skill score~\citep{vitart2017s2s,kirtman2014nmme}.
+That score has not been the acceptance test for a foundation model of regional water and heat at weeks-to-years leads.
 
-This paper states the ladder, applies it to ERA5 over the Tennessee Valley, and writes the matched specification for a coupled-model ensemble from the Energy Exascale Earth System Model (E3SM)~\citep{hersbach2020era5,golaz2022e3sm}.
-The reanalysis application is complete.
-The ensemble application is the next use of the method.
-A winter index gate from the same regional series is one rung of the ladder.
-Its model comparison is reported separately and is not repeated here.
-The contributions are the pass rule, the reanalysis claim table, and the transfer rule a later model has to meet.
+This paper fixes that test before such a model is trained.
+The evaluation ladder changes one design axis at a time: the target, the season, the lead, the variable, or the forecast object.
+Category edges and the historical class rate are frozen on training years.
+The score is the Brier skill score~\citep{brier1950,wilks2011}, and a result is retained only when the skill is positive on every pre-declared held-out split.
+The same events are scored over the Tennessee Valley in ERA5~\citep{hersbach2020era5} and in the E3SM seasonal-to-decadal hindcast campaign, initialized on 1~May and 1~November for about 24 months~\citep{golaz2022e3sm}.
+A pass in the reanalysis is evidence about the observed record.
+A pass in the hindcasts is evidence about the model's own categories.
+One result is not copied onto the other.
+Section~\ref{sec:milestone} is the rule a later model is scored under.
+The leads it can defend are the rows of Table~\ref{tab:claims}.
+A lead of a year is not among them.
 
 \section{Evaluation Ladder}
 \label{sec:method}
@@ -112,6 +121,7 @@ A positive skill score means the probabilities beat that historical rate.
 Hit rate and the Heidke skill score~\citep{heidke1926} are reported beside it.
 A claim requires $\mathrm{BSS}>0$ on every pre-declared held-out split, for that variable and that lead.
 A single season with a positive score does not replace the pooled score.
+Section~\ref{sec:milestone} separates that clearance from an advance, and it keeps a thin positive off the numeric floor.
 The probability model used to test the ladder is logistic regression.
 It is large enough to express a shift in class probabilities and small enough that a pass is unlikely to be memorized weather.
 
@@ -136,9 +146,59 @@ A pass in one world is not written into the other world's table.
 \subsection{What a map may add}
 \label{sec:map}
 
-After the regional-mean probability has cleared Section~\ref{sec:score}, a map may be scored for where inside the region the event sits.
-Field error at a lead is a different experiment.
-A smaller field error does not clear the probability row.
+A map is scored only after the regional-mean probability has cleared Section~\ref{sec:score}.
+A pattern score does not rescue a failed regional mean.
+A deterministic score of the map, such as its root-mean-square error, is a different experiment.
+A smaller value of that score does not clear the probability row.
+A higher regional-mean score than the logistic is an improvement on that probability.
+It does not show that a spatial field contained information the regional predictors lacked.
+Section~\ref{sec:milestone} is the rule that uses this distinction.
+
+\subsection{Milestone rule for a later model}
+\label{sec:milestone}
+
+The ladder is frozen before a foundation model is trained.
+It is the control for the leads that have been scored.
+An unscored lead, including a lead of a year, has no floor in this paper.
+
+A row is yes, thin, or no.
+Yes requires Brier skill above zero on every pre-declared held-out split, with a margin the claim table treats as one the sample can carry.
+Thin is a small positive Brier skill, or a positive Brier skill with a negative Heidke score.
+No is every remaining row.
+Where a rung also requires named season slices to be positive, a pooled score with a negative required slice is no.
+A single season with a positive score does not replace the pooled score.
+
+Clearance and advance are different results.
+Clearance is $\mathrm{BSS}>0$ against the historical rate in \eqref{eq:bss} on every pre-declared split.
+An advance is available only on a yes row.
+It requires clearance, and a Brier score lower than the matched logistic on those same splits.
+On a thin row and on a no row, the floor is the historical rate.
+The recorded thin skill is kept in the table.
+It is not the number a later model must beat.
+
+The matched logistic is the pre-declared menu whose inputs the later model is allowed to use at issue time.
+Indices alone, and indices plus the spatial mean of the issue-period atmosphere, are different menus.
+A model that receives that atmosphere is scored against the atmosphere menu.
+A model limited to the slow indices is scored against the indices-only menu.
+When the atmosphere menu scores below the indices-only menu, the atmosphere menu is not the control.
+A menu chosen by searching the same test sample after the rung is closed is not a control.
+
+The same held-out rows fix the logistic and then receive the later model.
+The comparison is paired and descriptive.
+This paper does not compute a block bootstrap, a permutation test, or a minimum margin.
+A yes row is a closed control on that split.
+It is not a significance claim.
+Years after the current test window lie outside the milestone.
+
+The score is computed in the dataset the later model was trained on.
+An ERA5 yes row is not an E3SM yes row.
+A model scored against the hindcast's own terciles is not a forecast of the observed valley.
+The edges remain the training ruler of Section~\ref{sec:baseline}.
+A named climate normal, such as 1991--2020 or 1980--2009, is a new scorecard.
+Tercile classes are the event this milestone scores.
+A reservoir or cooling-water threshold is a different event.
+Reliability of the issued probabilities is not part of the milestone.
+Where inside the valley the event sits, against a climatological probability map, is a separate experiment.
 
 \section{Reanalysis Case}
 \label{sec:case}
@@ -159,7 +219,7 @@ Figure~\ref{fig:domain} shows the seasonal predictors and the valley whose mean 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.92\textwidth]{figures/domain_indices_sst_tva.png}
+\includegraphics[width=0.88\textwidth,height=0.28\textheight,keepaspectratio]{figures/domain_indices_sst_tva.png}
 \caption{Seasonal case geography. The red box is the Tennessee Valley mean. Pacific boxes supply the winter precipitation predictors. The North Atlantic box is the temperature-side sea-surface region. The field is one ERA5 precipitation month, shown only to locate the boxes.}
 \label{fig:domain}
 \end{figure}
@@ -175,24 +235,22 @@ That second model tests whether the recent large-scale state carries probability
 It is still a regional-mean model.
 
 \begin{table}[!t]
-
 \centering
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{1.55cm}p{2.15cm}p{4.0cm}@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lll@{}}
 \topline
 \textbf{Rung} & \textbf{Axis} & \textbf{Question} \\
 \midline
-Amounts & Target type & Do indices forecast the monthly amount? \\
-Winter categories & Target type & Do autumn indices move winter odds? \\
+Amounts & Target & Do indices forecast the monthly amount? \\
+Winter categories & Target & Do autumn indices move winter odds? \\
 Other seasons & Season & Does that menu work in spring, summer, and fall? \\
 Longer winter lead & Lead & Do winter odds survive two and three seasons? \\
-Maps & Object & Can a map train, and is a week-ahead rain map the product? \\
+Maps & Object & Is a week-ahead rain map the product? \\
 One week & Lead, variable & Do next-week odds beat the historical rate? \\
-Two and three weeks & Lead & Do the one-week odds survive another one or two weeks? \\
+Two and three weeks & Lead & Do one-week odds survive another week or two? \\
 Two and three months & Lead & Do water odds at those leads beat the historical rate? \\
 Larger winter models & Capacity & Does a larger net beat the logistic on the same labels? \\
 \botline
-\end{tabular}
+\end{tabular*}
 \caption{One axis changes at each rung.}
 \label{tab:rungs}
 \end{table}
@@ -256,7 +314,7 @@ The categorical panel is the score that matches an odds product.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.92\textwidth]{figures/results_equal_panels.png}
+\includegraphics[width=0.88\textwidth,height=0.28\textheight,keepaspectratio]{figures/results_equal_panels.png}
 \caption{Blocked test on 15 winters.
 (a)~Winter precipitation categories, including October-initialized CFSv2 on the same ERA5 labels.
 (b)~Winter temperature categories. CFSv2 was not scored on temperature.
@@ -267,7 +325,7 @@ Logistic is the reference. The residual Transformer matches its hit rate and Hei
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.78\textwidth]{figures/audience_cfsv2_g1_wetdry_scorecard.png}
+\includegraphics[width=0.88\textwidth,height=0.28\textheight,keepaspectratio]{figures/audience_cfsv2_g1_wetdry_scorecard.png}
 \caption{October-initialized CFSv2 on the Tennessee Valley, scored against the same ERA5 winter precipitation labels as the logistic.
 Top: the forecast anomaly stays near zero while the reanalysis anomaly does not.
 Bottom: the resulting categories on the 15 test winters.
@@ -329,15 +387,8 @@ A lead of one season reproduces the winter rows of Table~\ref{tab:season}.
 \label{tab:lead}
 \end{table}
 
-Precipitation skill falls from $+0.091$ at one season to $+0.024$ at two seasons and to $-0.230$ at three (Fig.~\ref{fig:lead}).
+Precipitation skill falls from $+0.091$ at one season to $+0.024$ at two seasons and to $-0.230$ at three (Table~\ref{tab:lead}).
 Temperature does not survive past one season.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_lead_decay.png}
-\caption{Winter category skill as the issue moves earlier. Above zero beats the historical class rate. Precipitation remains positive at two seasons and fails at three.}
-\label{fig:lead}
-\end{figure}
 The logistic remains the reference at both leads, including after the model comparison in Table~\ref{tab:models}.
 Table~\ref{tab:claims} collects the claim that follows from Tables~\ref{tab:season} and~\ref{tab:lead}.
 
@@ -345,22 +396,22 @@ Table~\ref{tab:claims} collects the claim that follows from Tables~\ref{tab:seas
 
 \centering
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{3.4cm}p{2.6cm}p{3.4cm}l@{}}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}llcl@{}}
 \topline
 \textbf{Event} & \textbf{Lead} & \textbf{Held-out BSS} & \textbf{Claim} \\
 \midline
-Winter precip. & 1 season & $+0.091$ & yes \\
-Winter air temp. & 1 season & $+0.009$ & thin \\
-Fall precip. & 1 season & $+0.016$ & thin \\
-Winter precip. & 2 seasons & $+0.024$ & thin \\
-Week air temp. & 1 week & $+0.018/+0.032$ & yes \\
+Winter precipitation & 1 season & $+0.091$ & yes \\
+Winter air temperature & 1 season & $+0.009$ & thin \\
+Fall precipitation & 1 season & $+0.016$ & thin \\
+Winter precipitation & 2 seasons & $+0.024$ & thin \\
+Week air temperature & 1 week & $+0.018/+0.032$ & yes \\
 Week runoff & 1 week & $+0.018/+0.052$ & yes \\
 Week runoff & 2 weeks & $+0.033/+0.014$ & thin \\
-Week precip.; month water & 1 week; 2--3 mo & Tables~\ref{tab:week}--\ref{tab:month} & no \\
-Other 2--3 week rows & 2--3 weeks & Table~\ref{tab:week2} & no \\
+Week precipitation; month water & 1 week; 2--3 months & Tables~\ref{tab:week}--\ref{tab:month} & no \\
+Other two- and three-week rows & 2--3 weeks & Table~\ref{tab:week2} & no \\
 \botline
-\end{tabular}
-\caption{Claims retained from the reanalysis case. Thin means a small positive Brier skill, or a positive Brier skill with a negative Heidke score.}
+\end{tabular*}
+\caption{Claims retained from the reanalysis case. Thin means a small positive Brier skill, or a positive Brier skill with a negative Heidke score. Under Section~\ref{sec:milestone} a thin row is not a numeric floor. Its floor is the historical rate. A yes row is the row a later model must beat.}
 \label{tab:claims}
 \end{table}
 
@@ -408,7 +459,7 @@ It shows where the test skill sits: temperature skill is in summer, and winter t
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_week_bss.png}
+\includegraphics[width=0.88\textwidth,height=0.28\textheight,keepaspectratio]{figures/fig_week_bss.png}
 \caption{One-week Brier skill for the valley mean.
 Left and center: indices alone against indices plus the issue week's atmosphere.
 A pass requires both of those panels to be above zero.
@@ -502,19 +553,11 @@ $+3$ months & Indices $+$ atmosphere & $-0.162$ & $-0.049$ & $-0.009$ & $+0.009$
 No cell clears the pass rule once summer and winter are both required to be positive.
 Three-month runoff with indices alone is the only pooled test score above zero, at $+0.002$, after a positive validation score of $+0.033$.
 Its test summer slice is $-0.006$ and its test winter slice is $-0.001$.
-The pooled value is a residual across seasons, not a winter signal and not a summer signal, and it is not entered as a claim in Table~\ref{tab:claims}.
+The pooled value is a residual across seasons, not a winter signal and not a summer signal.
+Section~\ref{sec:milestone} marks that row no: a pooled score with a negative required season slice is not a claim.
+It is not entered in Table~\ref{tab:claims}.
 The atmospheric mean lowers the test skill in every row, including that one.
-Figure~\ref{fig:month} shows the index-only test scores, which are the stronger of the two models.
-The pooled three-month runoff bar is the only one above zero, and its summer and winter slices are not.
-
-\begin{figure}[!t]
-\centering
-\includegraphics[width=\linewidth]{figures/fig_month_bss.png}
-\caption{Month-ahead water odds from indices alone, on the 169 test months.
-The scale is a few hundredths of a Brier skill point.
-No lead is positive in both summer and winter.}
-\label{fig:month}
-\end{figure}
+On the indices-only rows in Table~\ref{tab:month}, the pooled three-month runoff score is the only test value above zero, and its summer and winter slices are not.
 
 \subsection{What the failures fix in the score}
 \label{sec:failures}
@@ -527,6 +570,9 @@ Same-day surface runoff is readable from the atmosphere.
 Top-layer soil moisture is not, and soil moisture was left off the probability gate.
 Week-ahead rain maps and week-ahead rain probabilities fail together.
 On the winter labels, extra capacity raised the one-season probability score once and lost to the logistic at two seasons.
+The residual Transformer raised winter-precipitation Brier skill from $+0.091$ to $+0.140$ while matching the logistic hit rate and Heidke score.
+That gain is a change in the probabilities on the same class calls.
+It is not evidence that a spatial field contained information the regional predictors lacked.
 The event definition, not the size of the network, is what separates the rows that pass from the rows that do not.
 
 \section{Using the Ladder Again}
@@ -535,51 +581,83 @@ The event definition, not the size of the network, is what separates the rows th
 \subsection{A later model in the same reanalysis}
 \label{sec:later}
 
-A later model trained on these fields is scored by reducing it to Table~\ref{tab:claims}.
+A later model trained on these fields is reduced to Table~\ref{tab:claims} under Section~\ref{sec:milestone}.
 The reduction uses the same issue times, the same regional mean, and the same frozen edges.
-Where the claim is ``yes'' or ``thin,'' the regional-mean probabilities have to beat the logistic skill on that row, on the same held-out splits.
-Where the claim is ``no,'' the floor is the historical rate in \eqref{eq:bss}.
-A spatial probability map is scored after that regional mean has cleared the row.
+The yes rows are winter precipitation at a lead of one season, one-week air temperature with the issue-week atmosphere, and one-week surface runoff with that same atmosphere.
+On those rows an advance must beat the matched logistic.
+The one-week temperature row is a pooled pass.
+Its test-winter slice is negative, so it is not a winter temperature forecast.
+Winter air temperature, fall precipitation, two-season winter precipitation, and two-week runoff are thin.
+Their floor is the historical rate in \eqref{eq:bss}.
+Temperature and precipitation at two and three weeks, precipitation at one week, and every month-ahead water row are no.
+Their floor is the same historical rate.
 The week-ahead rows and the seasonal rows are different events.
 Passing one does not pass the other.
-A two-week runoff probability has to beat the two-week logistic in Table~\ref{tab:week2}.
-Temperature and precipitation at two weeks, and every variable at three weeks, have no passing logistic.
-Their floor is the historical rate.
 A weekly reference map that the model displays, including a multi-decade week-of-year mean, is not the tercile ruler of Section~\ref{sec:baseline}.
 Scoring against a newly chosen normal is a new case.
 
-\subsection{Transfer to a coupled-model ensemble}
+\subsection{Coupled-model case}
 \label{sec:e3sm}
 
-The same ladder is the test of predictability inside E3SM~\citep{golaz2022e3sm}.
-The scientific question is whether the events in Table~\ref{tab:claims} shift, at the same leads, in the coupled model, and where the two worlds diverge.
-Table~\ref{tab:transfer} states what is shared and what is recomputed.
-The ensemble this specification is written for is the subseasonal-to-decadal set with starts on 1~May and 1~November, 1980--2013, members EN00--EN09.
-Those starts are not the 2010--2014 reanalysis weeks.
-Tercile edges are fit on the ensemble's own training starts.
+The second case asks whether the claims in Table~\ref{tab:claims} still shift categories in the E3SM seasonal-to-decadal (S2D) hindcast campaign.
+Starts are 1~May and 1~November in 1980--2003 and 2014--2018, under one model version.
+Training starts are 1980--1995, validation is 1996--2003, and the test is 2014--2018, including 2015.
+Each row is the mean of members EN00--EN02.
+The members share the observed index, so they are not three samples.
+Terciles are refit on the training starts, separately for May and November.
+Week and month rungs then have 29 training starts, 16 validation starts, and 10 test starts.
+A seasonal rung has about 15 training starts and 5 test starts.
+
+Predictors that must be known before the start are the two preceding months: September and October for a November start, March and April for a May start.
+The November value is not used, because that monthly index includes the rest of November.
+Pacific predictors are the Oceanic Ni\~{n}o Index, Ni\~{n}o-3.4, and the Ni\~{n}o-3.4 box anomaly.
+Temperature predictors at seasonal leads are the NAO and the AO.
+The week-ahead atmosphere is days 1--7 of the forecast.
+Temperature is 2~m air temperature.
+Precipitation is total precipitation.
+Runoff is total liquid runoff.
+Daily land history does not store the surface-runoff flux used in the reanalysis, so the runoff rows are a related event, not the same field.
+
+Table~\ref{tab:e3sm} scores the reanalysis claims on that sample.
+One-week temperature repeats when the issue week is included (validation $+0.102$, test $+0.131$).
+Fit on November starts alone, the same row is $+0.129$ and $+0.200$.
+Fit on May starts alone, validation is $-0.493$, so the repeat is a November result.
+One-week precipitation still fails.
+One-week and two-week runoff, which pass in ERA5, do not.
+November-to-winter precipitation from the September--October Pacific indices does not, nor does November-to-winter temperature from the September--October NAO and AO.
+Precipitation at two and three months remains below the historical rate.
 
 \begin{table}[!t]
 
 \centering
 \setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}p{2.2cm}p{5.5cm}@{}}
+\begin{tabular}{@{}lllc@{}}
 \topline
-\textbf{Piece} & \textbf{Rule} \\
+\textbf{Event} & \textbf{Lead} & \textbf{E3SM BSS} & \textbf{Repeats} \\
 \midline
-Events & Regional-mean dry/near/wet or cool/near/hot, at the leads already tested: one, two, and three weeks; two and three months; one to three seasons. \\
-Edges & Terciles from that world's training sample only. \\
-Score & Brier skill \eqref{eq:bss} on held-out samples, per variable and per lead, positive on every declared split. \\
-Comparison & Each cell is reported against Table~\ref{tab:claims}. Either world may pass while the other fails. \\
-Fields & Declared before scoring. Air temperature $\leftrightarrow$ \texttt{TREFHT} or \texttt{TBOT}; precipitation $\leftrightarrow$ \texttt{PRECT} or \texttt{RAIN}+\texttt{SNOW}; surface runoff $\leftrightarrow$ \texttt{QOVER}, with \texttt{QRUNOFF} only if the surface flux is absent. \\
+Air temp. & 1 week & $+0.102/+0.131$ & Nov.\ only \\
+Precip. & 1 week & $-0.017/-0.129$ & no \\
+Runoff & 1 week & $-0.196/-0.628$ & no \\
+Runoff & 2 weeks & $-0.027/-0.006$ & no \\
+Precip. & 2--3 mo & negative & no \\
+Precip. & Nov$\rightarrow$DJF & $-0.059/+0.074$ & no \\
+Air temp. & Nov$\rightarrow$DJF & $-0.043/-0.114$ & no \\
 \botline
 \end{tabular}
-\caption{What transfers to a second world. Years, edges, and field names are recomputed. The event, the edge rule, and the score are shared.}
-\label{tab:transfer}
+\caption{E3SM skill on the reanalysis claims. BSS is validation/test. A repeat requires both above zero. The test has 10 starts for a week or month and 5 winters for a season.}
+\label{tab:e3sm}
 \end{table}
 
-The field names are a translation, not a result.
-This paper stops at the specification.
-The ensemble scorecard is a later measurement.
+The written rule also marks cells that ERA5 did not pass.
+The largest is three-week runoff with the issue-week atmosphere ($+0.253/+0.199$).
+Two-week precipitation and runoff from the Pacific indices alone, runoff at two months from those indices, and a few seasonal runoff rows also clear both splits.
+November-to-winter runoff does so by $+0.004$ on validation.
+May-to-next-winter temperature from the March--April NAO and AO does so by $+0.020$ on five winters.
+Those cells are recorded.
+With 5 or 10 test starts they are not given the weight of the reanalysis claims.
+Under Section~\ref{sec:milestone} the hindcast yes row is one-week temperature for November initializations.
+The ERA5 yes rows for runoff and for winter precipitation do not transfer.
+A cell that clears both splits only in the hindcast is not a yes row.
 
 \section{Limitations}
 \label{sec:limits}
@@ -591,34 +669,41 @@ Validation at the month lead is a single year.
 The week split and the seasonal split cover different years, and a sentence that merges them is not supported.
 The 2010--2014 terciles are the training ruler of the week and month rungs, not a named climate normal.
 A failed season is a result for the pre-declared index menu.
-Air temperature and surface runoff are proxies for the thermal and water events that matter to energy operations.
-The coupled-model application has no score until that ensemble is run through Section~\ref{sec:e3sm}.
+The ensemble test is 10 starts for a week or a month and 5 starts for a season, so an ensemble pass is thinner than a reanalysis pass.
+Ensemble runoff is total liquid runoff, not the reanalysis surface flux.
+The ensemble score is against the model's own terciles, not against the observed valley.
 The CFSv2 comparison is a Tennessee Valley categorical check on 15 winters~\citep{barnston2012cfsv2}.
 It is not a global verification of that forecast system.
+No block bootstrap is reported, so a thin positive is not a margin a later model can be required to exceed.
+The held-out rows that fixed the logistic are the rows that will receive the later model.
+That comparison does not use a fresh sample.
+Equal terciles are not a reservoir or cooling-water threshold, and the reliability of the issued probabilities is not scored.
+No lead of a year has a score, so the milestone does not cover that lead.
 
 \section{Conclusion}
 \label{sec:conc}
 
-Weeks-to-years event probabilities are a hard forecast problem because a field error is minimized by redrawing the reference.
+Weeks-to-years event probabilities are a hard forecast problem because a deterministic score of the field, such as the root-mean-square error, can be minimized by the reference field.
 The ladder isolates the alternative quantity: a shift of category probabilities above a historical rate that was frozen before the test.
-In ERA5 over the Tennessee Valley the filter keeps winter precipitation odds out to two seasons, one-week air-temperature and surface-runoff odds when the issue week's atmosphere is included, and a thinner two-week surface-runoff odds from those same predictors.
-It rejects three-week odds, week-ahead precipitation, and the two- and three-month water rows.
-A later model in this reanalysis is an advance only when its regional-mean probabilities beat that table.
-An E3SM ensemble is judged by the same events and the same score, on edges fit to its own training starts.
+In ERA5 that filter keeps winter precipitation odds out to two seasons, one-week air-temperature and surface-runoff odds when the issue week's atmosphere is included, and a thinner two-week runoff odds from those same predictors.
+In the S2D hindcasts the same rule keeps one-week temperature odds for November initializations and does not keep the week-ahead runoff odds or the winter precipitation odds.
+A later model is an advance only on a yes row, only against the logistic with the same issue-time information, and only in the dataset where it was trained.
+A thin row and a no row keep the historical rate as their floor.
+Clearance of that rate is not the advance.
+An unscored lead, including a lead of a year, is outside the milestone.
 
 \clearpage
 \acknowledgments
-This research was supported by the U.S. Department of Energy Genesis Mission / Water4Energy project (DE-FOA-0003612).
+This research was supported by the U.S. Department of Energy Genesis Mission / Water4Energy project under award DE-SCL0000253 (DE-FOA-0003612).
 It used resources of the Oak Ridge Leadership Computing Facility, a DOE Office of Science User Facility.
+The coupled-model case uses initialized hindcasts from the Energy Exascale Earth System Model (E3SM) subseasonal-to-seasonal to decadal (S2S2D) campaign.
+We thank the E3SM S2S2D campaign team for producing those simulations and for sharing the archive used here.
 This manuscript has been authored by UT-Battelle, LLC, under contract DE-AC05-00OR22725 with the U.S. Department of Energy.
-The U.S. government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this manuscript, or allow others to do so, for U.S. government purposes.
-DOE will provide public access to these results in accordance with the DOE Public Access Plan (\url{http://energy.gov/downloads/doe-public-access-plan}).
 The authors declare no conflicts of interest.
 
 \availstatement
 The seasonal rungs use the monthly AI-ready pack archived at \url{https://doi.org/10.13139/ORNLNCCS/3409936}.
-The week and month scorecards that support the tables (\texttt{bandw\_odds\_scorecard.json}, \texttt{bandw\_leads23\_scorecard.json}, and \texttt{bandm\_odds\_scorecard.json}) and the script that scores the two- and three-week leads accompany this manuscript.
-ERA5 is the Copernicus reanalysis described by \citet{hersbach2020era5}.
+The E3SM seasonal-to-decadal AI-ready sample is archived at \url{https://doi.org/10.5281/zenodo.23188732}.
 
 \clearpage
 \bibliographystyle{ametsocV6}
